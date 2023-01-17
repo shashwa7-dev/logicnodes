@@ -14,7 +14,7 @@ export default function TextUpdaterNode({ data }) {
         <input
           id="text"
           name="text"
-          defaultValue={data?.value}
+          defaultValue={data?.value ?? 0}
           onChange={onChange}
           placeholder={data?.nodeName}
         />

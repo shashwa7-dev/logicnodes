@@ -30,8 +30,6 @@ function App() {
     setTotal(parseInt(num1) + parseInt(num2));
   }, [num1, num2]);
   const [initialNodes, setInitialNodes] = useState([
-    // { id: "1", position: { x: 0, y: 0 }, data: { label: "1" } },
-    // { id: "2", position: { x: 0, y: 100 }, data: { label: "2" } },
     {
       id: "1",
       type: "textUpdater",
@@ -48,15 +46,14 @@ function App() {
       id: "3",
       type: "addFunc",
       position: { x: 100, y: 200 },
-      data: { value: num1 + num2 },
+      data: { value: total },
     },
   ]);
-  useEffect(() => {
-    updateTotal();
-    console.log("total", num1, num2, total);
-  }, [updateTotal, total]);
 
-  const initialEdges = [{ id: "e1-2", source: "1", target: "2" }];
+  const initialEdges = [
+    { id: "e1-3", source: "1", target: "3" },
+    { id: "e2-3", source: "2", target: "3" },
+  ];
 
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
@@ -66,9 +63,45 @@ function App() {
     [setEdges]
   );
 
+  useEffect(() => {
+    updateTotal();
+  }, [updateTotal]);
+  console.log("num1 num2", num1, num2, total);
+  useEffect(() => {
+    if (edges.filter((edg) => edg.target === "3").length === 2) {
+      setNodes((nds) =>
+        nds.map((node) => {
+          if (node.id === "3") {
+            // it's important that you create a new object here
+            // in order to notify react flow about the change
+            node.data = {
+              value: total,
+            };
+          }
+
+          return node;
+        })
+      );
+    } else {
+      setNodes((nds) =>
+        nds.map((node) => {
+          if (node.id === "3") {
+            // it's important that you create a new object here
+            // in order to notify react flow about the change
+            node.data = {
+              value: 0,
+            };
+          }
+
+          return node;
+        })
+      );
+    }
+  }, [setNodes, total, edges.length]);
+
   return (
     <div>
-      <h1>Hello</h1>
+      <h1>Addition</h1>
       <div className="flowChart" style={{ height: 800 }}>
         <ReactFlow
           nodes={nodes}
